@@ -2,7 +2,7 @@
   <div class="cart">
     <div class="head">
       <mt-cell title="购物清单">
-        购物车内共<span class="amount">{{ goods.length }}</span>件商品
+        购物车内共<span class="amount">10</span>件商品
       </mt-cell>    
     </div>
     <div class="container">
@@ -12,16 +12,19 @@
         <button><router-link to="/catalog">开始购物</router-link></button>
       </div>
       <li v-for="(item, key) in goods" :key="item.id">
+        <!-- <li> -->
         <div class="list">
-          <div class="left">
-              <button class="selectGood" @click.stop.prevent="selectGoods(item)"><span v-show="item.status === true"></span></button>
-              <img :src="item.pic" alt="">
+          <div class="left"> 
+              <!-- <button class="selectGood" @click.stop.prevent="selectGoods(item)"><span v-show="item.status === true"></span></button> -->
+              <button class="selectGood" @click.stop.prevent="selectGoods(item)"><span></span></button>
+              <img src="http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/mVH1hjH5kfseeGH591NDqNZ49YK5Eh.jpg" alt="">
           </div>
           <div class="right">
-            <p class="product_name">{{ item.name }}  <span class="product_bill">￥{{ item.price }}</span></p>
+            <p class="product_name"> {{item.name}} <span class="product_bill">￥ {{item.price}} </span></p>
             <div class="product_amount">
               <input type="button" value="-" @click="mins(item)" class="mins">
               <input type="text" disabled class="num" v-model="item.counter"> 
+              <input type="text" disabled class="num" v-model="kjdsk"> 
               <input type="button" value="+" @click="plus(item)" class="plus">
               <i class="el-icon-delete" @click="deleteItem(key,item)"></i>
             </div>
@@ -29,8 +32,11 @@
         </div>
       </li>
     </div>     
-    <div class="total-wrapper" v-show="goods.length !== 0">
-      <p><button @click='selectAll' class="selectAll"><span v-show="checkAll"></span></button>全选 合计：￥<span class="bill">{{ sum }}</span></p>
+    <!-- <div class="total-wrapper" v-show="goods.length !== 0"> -->
+    <div class="total-wrapper">
+
+      <!-- <p><button @click='selectAll' class="selectAll"><span v-show="checkAll"></span></button>全选 合计：￥<span class="bill">{{ sum }}</span></p> -->
+      <p><button @click='selectAll' class="selectAll"><span></span></button>全选 合计：￥<span class="bill">10</span></p>
       <mt-button type="primary" @click="buy">结算</mt-button>
     </div>
   </div>
@@ -39,7 +45,8 @@
 export default {
   data () {
     return {
-      goods: [],
+      goods: [
+      ],
       sum: 0,
       checkAll: false,
       name: '',
@@ -48,35 +55,6 @@ export default {
     }
   },
   methods: {
-    buy () {
-      var that = this
-      var goods = this.goods
-      for (let i = 0; i < goods.length; i++) {
-        if (goods[i].status === true) {
-          this.menu.push({
-            counter: goods[i].counter,
-            gid: goods[i].gid,
-            cid: goods[i].cid
-          })
-        }
-      }
-      if (this.menu.length !== 0) {
-        this.axios.post('http://www.ethedot.com/chatshop/Index/obligation', {
-          obligation: that.menu,
-          id: sessionStorage.getItem('id')
-        })
-        .then(function (response) {
-          if (response.data === 1) {
-            that.$router.push('/about/orderList/obligation')
-          } else if (response.data === 2) {
-            alert('error')
-          }
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-      }
-    },
     mins (item) {
       if (item.counter <= 1) {
         return
@@ -152,29 +130,31 @@ export default {
     }
   },
   mounted: function () {
-    this.distinguish()
-    var that = this
-    this.axios.post('http://www.ethedot.com/chatshop/Index/car', {
-      id: sessionStorage.getItem('id')
-    })
-    .then(function (response) {
-      response = response.data
-      for (var i = 0; i < response.length; i++) {
-        that.goods.push({
-          gid: response[i].gid,
-          cid: response[i].cid,
-          name: response[i].name,
-          price: parseFloat(response[i].price),
-          total: parseFloat(response[i].price),
-          counter: parseFloat(response[i].sum),
-          pic: 'http://www.ethedot.com/chatshop/Public/Uploads/' + response[i].pic,
-          status: false
-        })
-      }
-    })
-    .catch(function (error) {
-      console.log(error)
-    })
+    this.goods = JSON.parse(sessionStorage.getItem('list'));
+    console.log(this.goods)
+    // this.distinguish()
+    // var that = this
+    // this.axios.post('http://www.ethedot.com/chatshop/Index/car', {
+    //   id: sessionStorage.getItem('id')
+    // })
+    // .then(function (response) {
+    //   response = response.data
+    //   for (var i = 0; i < response.length; i++) {
+    //     that.goods.push({
+    //       gid: response[i].gid,
+    //       cid: response[i].cid,
+    //       name: response[i].name,
+    //       price: parseFloat(response[i].price),
+    //       total: parseFloat(response[i].price),
+    //       counter: parseFloat(response[i].sum),
+    //       pic: 'http://www.ethedot.com/chatshop/Public/Uploads/' + response[i].pic,
+    //       status: false
+    //     })
+    //   }
+    // })
+    // .catch(function (error) {
+    //   console.log(error)
+    // })
     // if (sessionStorage.id === ',,') {
     //   alert('身份过期，请重新登录！')
     // }

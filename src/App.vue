@@ -18,13 +18,13 @@
             分类
           </router-link>
         </mt-tab-item>
-        <!-- <mt-tab-item>
+        <mt-tab-item>
           <router-link to="/cart">
             <img src="./images/icon/cart.png" alt=""><br> 
             购物车
           </router-link>
         </mt-tab-item>
-        <mt-tab-item>
+       <!--  <mt-tab-item>
           <router-link to="/about">
             <img src="./images/icon/account.png" alt=""><br> 
             我的
@@ -92,7 +92,7 @@ export default {
       height: 40px;
       margin-left: 25%;
       margin-top: 300px; 
-      background: #f96000;
+      background: #fa0000;
       border: none;
       border-radius: 5px;
       color: #fff;
@@ -114,7 +114,7 @@ export default {
         .aStyle;
         color: #999;
         &.active{
-          color: rgb(250,140,0);
+          color: #fa0000;
         }
         img{
           width: 25px;

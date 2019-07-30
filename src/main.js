@@ -61,7 +61,7 @@ const routes = [
     children: [
       {path: '/catalog', redirect: '/catalog/catalogPage'},
       {path: '/catalog/catalogPage', component: catalogPage},
-      {path: '/catalog/detail/:gid', name: 'detial', component: detail}
+      {path: '/catalog/detail', name: 'detial', component: detail}
     ]
   },
   {path: '/cart', component: cart},

@@ -4,52 +4,58 @@
       <div class="banner">
         <router-link to=""><span onclick="window.history.go(-1)" class="el-icon-arrow-left"></span></router-link>
       <mt-swipe :auto="0">
-        <mt-swipe-item v-for="item in lunbo" :key="item.id">
-            <img :src="item.pic" alt="">
+        <mt-swipe-item v-for="item in goodDetail.imgurl">
+            <img :src="item.img" alt="">
         </mt-swipe-item>
       </mt-swipe>
       </div>
       <div class="introduce">
-        <p>{{ detailData[0] }}</p>
+        <p>{{ goodDetail.name }}</p>
       </div>
       <div class="price">
-        <p class="now-price">￥{{ detailData[1] }}</p>
-        <p class="old-price">原价：<del>￥{{ detailData[2] }}</del></p>
-        <div class="delivery">
+        <p class="now-price">￥{{ goodDetail.price }}</p>
+        <!-- <p class="old-price">原价：<del>￥{{ detailData[2] }}</del></p> -->
+        <!-- <div class="delivery">
           <p class="delivery-left">包邮</p>
           <p class="delivery-right">上海</p>
+        </div> -->
+      </div>
+      
+      <div class="promise"  @click="showServer">
+        <div class="promise-container">
+          <!-- <p class="promise1"><span class="el-icon-circle-check"></span>运费险</p> -->
+          <p class="promise2"><span class="el-icon-circle-check"></span>单位：{{goodDetail.danwei}}</p>
+          <p class="promise3"><span class="el-icon-circle-check"></span>库存:  {{goodDetail.kucn}}</p>
         </div>
+        <!-- <p class="arrow-right"><span class="el-icon-arrow-right"></span></p> -->
       </div>
       <div class="sale" @click="showSale">
         <p class="sale-left">本店活动</p>
-        <p class="arrow-right"><span class="el-icon-arrow-right"></span></p>
+        <!-- <p class="arrow-right"><span class="el-icon-arrow-right"></span></p> -->
       </div>
-      <div class="promise"  @click="showServer">
-        <div class="promise-container">
-          <p class="promise1"><span class="el-icon-circle-check"></span>运费险</p>
-          <p class="promise2"><span class="el-icon-circle-check"></span>七天退货</p>
-          <p class="promise3"><span class="el-icon-circle-check"></span>正品保证</p>
-        </div>
-        <p class="arrow-right"><span class="el-icon-arrow-right"></span></p>
-      </div>
-      <div class="product-info" @click="showGoods">
-        <div v-html="detailData[3]"></div>
-      </div>
+      <ul class="product_ul">
+        <li v-for="(item, index) in goods" @click="goDetail(item)" :key="index">
+          <router-link :to="{ path:'/catalog/detail', query:{gid:item.id}}"><img class="animated zoomIn" :src="item.thumb" alt=""></router-link>
+          <p>{{item.title}}</p>
+          <p class="yuan">￥{{item.price}}</p>
+          <!-- <p class="car" @click="addCar(item)"></p> -->
+        </li>  
+      </ul> 
     </div>
     <div class="detail-footer">
-      <div class="left">
+      <!-- <div class="left">
         <div class="store">
           <img src="./store.png" alt="">
           <p @click="store">收藏</p>
         </div>
-      </div>
+      </div> -->
       <div class="right">
         <button class="add-cart" @click="addCart">加入购物车</button>
         <button class="buy-now" @click="buyNow">立即购买</button>
       </div>
     </div>
-    <detailSale v-show="show" class="animated slideInUp" ref="detailSale"></detailSale>  
-    <detailServer v-show="show" class="animated slideInUp" ref="detailServer"></detailServer>  
+    <!-- <detailSale v-show="show" class="animated slideInUp" ref="detailSale"></detailSale>   -->
+    <!-- <detailServer v-show="show" class="animated slideInUp" ref="detailServer"></detailServer>   -->
    </div>
 </template>
 <script>
@@ -60,6 +66,28 @@ export default {
   data () {
     return {
       show: false,
+      goods:[
+        {id:'1',counter:1,title:'炫迈口香糖11',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'},
+        {id:'2',counter:1,title:'炫迈口香糖22',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'},
+        {id:'3',counter:1,title:'炫迈口香糖33',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'},
+        {id:'4',counter:1,title:'炫迈口香糖44',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'},
+        {id:'5',counter:1,title:'炫迈口香糖55',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'},
+        {id:'5',counter:1,title:'炫迈口香糖66',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'},
+        {id:'6',counter:1,title:'炫迈口香糖77',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'},
+        {id:'8',counter:1,title:'炫迈口香糖88',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'}
+
+      ],
+      goodDetail:{
+        imgurl:[
+          {img: 'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/05/vuDYvzFGY8VSdX2ODGODF7VRgX66Bt.jpg'},
+          {img: 'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/05/P6u4hU46U32iu6n26Us6UUuUUQBbqz.jpg'},
+          {img: 'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/05/g6ONdaNfQqatAT9vAdTluuVfvvy6fU.jpg'}
+        ],
+        name:'香港公仔碗仔面(76g)',
+        price:5.5,
+        kucn:50,
+        danwei:'包'
+      },
       detailData: [],
       gid: '',
       addSuccess: false,
@@ -183,31 +211,31 @@ export default {
     detailServer
   },
   mounted: function () {
-    this.distinguish()
-    var that = this
-    this.axios.post('http://www.ethedot.com/chatshop/Index/test')
-    .then(function (response) {
-      for (var i = 0; i < response.data.length; i++) {
-        if (that.$route.params.gid === response.data[i].gid) {
-          that.detailData.push(
-            response.data[i].name,
-            response.data[i].price,
-            response.data[i].oldpri,
-            response.data[i].content,
-          )
-          that.gid = response.data[i].gid
-          var arr = response.data[i].lunbo
-          for (let i = 0; i < arr.length; i++) {
-            that.lunbo.push({
-              'pic': arr[i]
-            })
-          }
-        }
-      }
-    })
-    .catch(function (error) {
-      console.log(error)
-    })
+    // this.distinguish()
+    // var that = this
+    // this.axios.post('http://www.ethedot.com/chatshop/Index/test')
+    // .then(function (response) {
+    //   for (var i = 0; i < response.data.length; i++) {
+    //     if (that.$route.params.gid === response.data[i].gid) {
+    //       that.detailData.push(
+    //         response.data[i].name,
+    //         response.data[i].price,
+    //         response.data[i].oldpri,
+    //         response.data[i].content,
+    //       )
+    //       that.gid = response.data[i].gid
+    //       var arr = response.data[i].lunbo
+    //       for (let i = 0; i < arr.length; i++) {
+    //         that.lunbo.push({
+    //           'pic': arr[i]
+    //         })
+    //       }
+    //     }
+    //   }
+    // })
+    // .catch(function (error) {
+    //   console.log(error)
+    // })
   }
 }
 </script>
@@ -240,11 +268,11 @@ li{
     }
   }
   .banner{
-    height: 300px;
+    height: 370px;
     overflow: hidden;
     position: relative;
     .mint-swipe{
-      height: 300px;
+      height: 100%;
         .mint-swipe-indicator{
           opacity: 1;
           background: #fff;
@@ -282,11 +310,11 @@ li{
     }
   }
   .introduce{
-    height: 75px;
+    height: 50px;
     background: #f8f8f8;
     p{
       padding: 0 2%;
-      line-height: 25px;
+      line-height: 50px;
     }
   }
   .price{
@@ -412,6 +440,43 @@ li{
         width: 55%;
         float: right;
       }
+    }
+  }
+}
+.product_ul{
+  li{
+    list-style: none;
+    background: #fff;
+    width: 25%;
+    float: left;
+    margin-left: 3%;
+    margin-top: 10px;
+    img{
+      // height: 120px;
+      width: 100%;
+      display: block;
+    }
+    p{
+      font-size: 14px;
+      text-align: center;
+      color: #333;
+      line-height: 22px;
+      text-overflow:ellipsis;
+      padding: 0 2px;
+    }
+    .yuan{
+      float: left;
+      color: #fa0000;
+      line-height: 40px;
+      padding-left: 10px;
+    }
+    .car{
+      background: url('./car.png') no-repeat;
+      background-size: 100% 100%;
+      width: 20px;
+      height: 24px;
+      float: right;
+      margin: 8px 10px 0 0;
     }
   }
 }

@@ -9,38 +9,13 @@
           </router-link>
       </div>
     </div>
-    <mt-swipe :auto="0">
-      <mt-swipe-item v-for="item in banners" :key="item.id">
-          <img @click="banner(item)" :src="item.pic" alt="">
-      </mt-swipe-item>
-    </mt-swipe>
-      <!-- <el-carousel :interval="3000" arrow="always">
-        <el-carousel-item v-for="item in banners" :key="item.id">
-          <img @click="banner(item)" :src="item.pic" alt="">
-        </el-carousel-item>
-      </el-carousel> -->
-    <div class="list">
-      <div class="loadhome" v-show="loading">
-        <div class="spinner">
-          <div class="rect1"></div>
-          <div class="rect2"></div>
-          <div class="rect3"></div>
-          <div class="rect4"></div>
-          <div class="rect5"></div>
-        </div>
-      </div>
-      <div class="title">
-        <font>推荐</font>
-      </div>
-      <li v-for="item in goods" :key="item.id">
-        <div class="goods" @click="goDetail(item)">
-          <img v-lazy='item' :src="item.src" alt="">
-          <p class="text">
-            <span class="name">{{ item.name }}</span>
-            ￥<span class="price">{{ item.price }}</span>
-          </p>
-        </div>
-      </li>
+    <div class="category">
+      <el-row :gutter="10">
+
+        <el-col :span="8" v-for="(item,index) in list" :key='index'><div class="grid-content bg-purple">
+          <router-link :to="{ path:'/catalog', query:{id:item.id}}"><img :src="item.imgurl" alt=""></router-link>
+        </div></el-col>
+      </el-row>
     </div>
   </div>
 </template>
@@ -50,19 +25,23 @@ export default {
   data () {
     return {
       goods: [],
+      list:[
+        
+        {imgurl:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/06/cPKwiDLNQaqfP8elThED88e4nPweeE.jpg',id:'1'},
+        {imgurl:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/06/lPkf11kyfYrK78hR9rNr1p1mzpSaP9.jpg',id:'2'},
+        {imgurl:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/06/Xv1LL1wHOfllL8wLPffOf1fHs1c48f.jpg',id:'3'},
+        {imgurl:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/06/vk77mfTvhNOu9fnnZYo4hHtFeOkFvF.jpg',id:'4'},
+        {imgurl:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/06/nZdbP36BbkOBNwTBbc4SjsN9Bt54lc.jpg',id:'5'},
+        {imgurl:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/06/I2g52405w44b0AWsyBgxx4AG1Hk1a2.jpg',id:'6'},
+        {imgurl:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/06/JWoNvLv7H7i2Wo127Zb7y77coNCvNl.jpg',id:'7'},
+        {imgurl:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/06/L3Euj8EKo8O9ew9uDOd8WUpEeKZk2Q.jpg',id:'8'},
+        {imgurl:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/06/B6zPypMgYPzpVIwW2U0zi0W6HV9wh9.jpg',id:'9'}
+      ],
       banners: [],
       loading: false
     }
   },
   methods: {
-    banner (item) {
-      // sessionStorage.gid = item.gid
-      this.$router.push('/catalog/detail/' + item.gid)
-    },
-    goDetail (item) {
-      sessionStorage.gid = item.gid
-      this.$router.push('/catalog/detail/' + item.gid)
-    }
   },
   mounted: function () {
     this.distinguish()
@@ -73,20 +52,6 @@ export default {
       that.loading = false
       for (var i = 0; i < response.data.length; i++) {
         that.goods.push({click: response.data[i].click, gid: response.data[i].gid, name: response.data[i].name, price: response.data[i].price, src: 'http://www.ethedot.com/chatshop/Public/Uploads/' + response.data[i].pic})
-      }
-    })
-    .catch(function (error) {
-      console.log(error)
-    })
-    // banner
-    this.axios.post('http://www.ethedot.com/chatshop/Index/banner')
-    .then(function (response) {
-      for (var i = 0; i < response.data.length; i++) {
-        that.banners.push({
-          bid: response.data[i].bid,
-          pic: 'http://www.ethedot.com/chatshop/Public/Uploads/' + response.data[i].url,
-          gid: response.data[i].gid
-        })
       }
     })
     .catch(function (error) {
@@ -111,106 +76,21 @@ p{
   margin-bottom: 60px;
   position: relative;
   overflow-y: scroll;
+  .category{
+    padding: 10px 2%;
+    .bg-purple {
+        height: 170px;
+        // background: #ccc;
+        img{
+          display: block;
+          width: 100%;
+          height: 100%;
+          object-fit:cover;
+        }
+    }
+  }
   &::-webkit-scrollbar{
     display: none;
-  }
-  .list{
-    width: 100%;
-    .loadhome{
-      .spinner {
-        margin: 100px auto;
-        width: 50px;
-        height: 60px;
-        text-align: center;
-        font-size: 10px;
-      }
-      .spinner > div {
-        background-color: #f29600;
-        height: 100%;
-        width: 6px;
-        display: inline-block;
-        
-        -webkit-animation: stretchdelay 1.2s infinite ease-in-out;
-        animation: stretchdelay 1.2s infinite ease-in-out;
-      }
-      .spinner .rect2 {
-        -webkit-animation-delay: -1.1s;
-        animation-delay: -1.1s;
-      }
-      .spinner .rect3 {
-        -webkit-animation-delay: -1.0s;
-        animation-delay: -1.0s;
-      }
-      .spinner .rect4 {
-        -webkit-animation-delay: -0.9s;
-        animation-delay: -0.9s;
-      }
-      .spinner .rect5 {
-        -webkit-animation-delay: -0.8s;
-        animation-delay: -0.8s;
-      }
-      @-webkit-keyframes stretchdelay {
-        0%, 40%, 100% { -webkit-transform: scaleY(0.4) } 
-        20% { -webkit-transform: scaleY(1.0) }
-      }
-      @keyframes stretchdelay {
-        0%, 40%, 100% {
-          transform: scaleY(0.4);
-          -webkit-transform: scaleY(0.4);
-        }  20% {
-          transform: scaleY(1.0);
-          -webkit-transform: scaleY(1.0);
-        }
-      }
-    }
-    .title{
-      text-align: center;
-      margin-top: 3%;
-      font{
-        padding-bottom: 2px;
-        border-bottom: 2px solid #f29600;
-      }
-    }
-    .goods{
-      float: left;
-      width: 44%;
-      background: #ddd;
-      margin-left: 4%;
-      margin-top: 4%;
-      height: 150px;
-      position: relative;
-      overflow: hidden;
-      img{
-        width: 100%;
-        height: 150px;
-      }
-      img[lazy=loading] {
-        width: 40;
-        height: 40px;
-        margin: 55px auto;
-      }
-      .text{
-        width: 100%;
-        background: rgba(0, 0, 0, 0.6);
-        position: absolute;
-        bottom: 0;
-        height: 30px;
-        line-height: 30px;
-        padding: 0 5%;
-        color:#999;
-        .name{
-          width: 60%;
-          display: block;
-          float: left;
-          white-space:nowrap;
-          overflow:hidden;
-          text-overflow:ellipsis;
-        }
-        .price{
-          color: #f29600;
-        }
-      }
-    }
   }
   .search-top {
     background: #eee;
@@ -235,7 +115,7 @@ p{
         height: 30px;
         line-height: 30px;
         width: 6%;
-        color: #f29600;
+        color: #fa0000;
         font-size: 15px;
       }
       input {
@@ -247,7 +127,7 @@ p{
       }
       .btn-search {
         border: none;
-        background: #f29600;
+        background: #fa0000;
         color: #fff;
         height: 30px;
         line-height: 30px;
@@ -300,22 +180,4 @@ p{
         }
     }  
 }
-
-.mint-swipe{
-  height: 175px;
-  width: 100%;
-  img{
-    display: inline-block;
-    height: auto;
-    width: 100%;
-  }
-  .mint-swipe-indicator{
-    opacity: 1;
-    background: #fff;
-  }
-  .mint-swipe-indicator.is-active{
-    background: #f29600;
-  }
-}
-
 </style>
