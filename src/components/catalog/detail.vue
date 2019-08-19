@@ -4,8 +4,8 @@
       <div class="banner">
         <router-link to=""><span onclick="window.history.go(-1)" class="el-icon-arrow-left"></span></router-link>
       <mt-swipe :auto="0">
-        <mt-swipe-item v-for="item in goodDetail.imgurl">
-            <img :src="item.img" alt="">
+        <mt-swipe-item v-for="(item,index) in goodDetail.proList" :key="index">
+            <img :src="'http://47.97.80.89:8082' + item.url" alt="">
         </mt-swipe-item>
       </mt-swipe>
       </div>
@@ -20,12 +20,12 @@
           <p class="delivery-right">上海</p>
         </div> -->
       </div>
-      
+
       <div class="promise"  @click="showServer">
         <div class="promise-container">
           <!-- <p class="promise1"><span class="el-icon-circle-check"></span>运费险</p> -->
-          <p class="promise2"><span class="el-icon-circle-check"></span>单位：{{goodDetail.danwei}}</p>
-          <p class="promise3"><span class="el-icon-circle-check"></span>库存:  {{goodDetail.kucn}}</p>
+          <p class="promise2"><span class="el-icon-circle-check"></span>单位：{{goodDetail.unit}}</p>
+          <p class="promise3"><span class="el-icon-circle-check"></span>库存:  {{goodDetail.count}}</p>
         </div>
         <!-- <p class="arrow-right"><span class="el-icon-arrow-right"></span></p> -->
       </div>
@@ -39,8 +39,8 @@
           <p>{{item.title}}</p>
           <p class="yuan">￥{{item.price}}</p>
           <!-- <p class="car" @click="addCar(item)"></p> -->
-        </li>  
-      </ul> 
+        </li>
+      </ul>
     </div>
     <div class="detail-footer">
       <!-- <div class="left">
@@ -50,8 +50,8 @@
         </div>
       </div> -->
       <div class="right">
-        <button class="add-cart" @click="addCart">加入购物车</button>
-        <button class="buy-now" @click="buyNow">立即购买</button>
+        <button class="add-cart" @click="addCar(goodDetail)">加入购物车</button>
+        <button class="buy-now" @click="addCar(goodDetail)">立即购买</button>
       </div>
     </div>
     <!-- <detailSale v-show="show" class="animated slideInUp" ref="detailSale"></detailSale>   -->
@@ -66,32 +66,13 @@ export default {
   data () {
     return {
       show: false,
-      goods:[
-        {id:'1',counter:1,title:'炫迈口香糖11',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'},
-        {id:'2',counter:1,title:'炫迈口香糖22',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'},
-        {id:'3',counter:1,title:'炫迈口香糖33',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'},
-        {id:'4',counter:1,title:'炫迈口香糖44',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'},
-        {id:'5',counter:1,title:'炫迈口香糖55',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'},
-        {id:'5',counter:1,title:'炫迈口香糖66',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'},
-        {id:'6',counter:1,title:'炫迈口香糖77',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'},
-        {id:'8',counter:1,title:'炫迈口香糖88',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'}
-
-      ],
-      goodDetail:{
-        imgurl:[
-          {img: 'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/05/vuDYvzFGY8VSdX2ODGODF7VRgX66Bt.jpg'},
-          {img: 'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/05/P6u4hU46U32iu6n26Us6UUuUUQBbqz.jpg'},
-          {img: 'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/05/g6ONdaNfQqatAT9vAdTluuVfvvy6fU.jpg'}
-        ],
-        name:'香港公仔碗仔面(76g)',
-        price:5.5,
-        kucn:50,
-        danwei:'包'
-      },
+      goods:[],
+      goodDetail:{},
       detailData: [],
       gid: '',
       addSuccess: false,
-      lunbo: []
+      lunbo: [],
+      arr:[]
     }
   },
   methods: {
@@ -155,91 +136,47 @@ export default {
         console.log(error)
       })
     },
-    addCart () {
-      var that = this
-      that.axios.post('http://www.ethedot.com/chatshop/Index/car', {
-        id: sessionStorage.getItem('id')
-      })
-      .then(function (response) {
-        if (response.data.length > 0) {
-          var arr = []
-          for (var i = 0; i < response.data.length; i++) {
-            arr.push(response.data[i].gid)
-          }
-          if (arr.indexOf(that.gid) < 0) {
-            that.axios.post('http://www.ethedot.com/chatshop/Index/caozuo', {
-              gid: that.gid,
-              id: sessionStorage.getItem('id')
-            })
-            .then(function (response) {
-              if (response.data === 1) {
-                that.$router.push('/cart')
-              } else if (response.data === 2) {
-                alert('添加失败！')
-              }
-            })
-            .catch(function (error) {
-              console.log(error)
-            })
-          } else {
-            that.$router.push('/cart')
-          }
-        } else {
-          that.axios.post('http://www.ethedot.com/chatshop/Index/caozuo', {
-            gid: that.gid,
-            id: sessionStorage.getItem('id')
-          })
-          .then(function (response) {
-            if (response.data === 1) {
-              that.$router.push('/cart')
-            } else if (response.data === 2) {
-              alert('添加失败！')
-            }
-          })
-          .catch(function (error) {
-            console.log(error)
-          })
-        }
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
+    addCar(item){
+      // new Promise(() =>{
+      //   let arr = sessionStorage.getItem('list',JSON.parse(item))?sessionStorage.getItem('list',JSON.parse(item)):[];
+      // }).then(result){
+
+      // }
+      console.log(sessionStorage.getItem('list'))
+      if( sessionStorage.getItem('list') == '' || sessionStorage.getItem('list') == null){
+        this.$data.arr.push(item)
+        sessionStorage.setItem('list',JSON.stringify(this.$data.arr))
+      }else{
+        this.$data.arr = JSON.parse(sessionStorage.getItem('list'))
+        this.$data.arr.push(item)
+        sessionStorage.setItem('list',JSON.stringify(this.$data.arr))
+      }
     }
   },
   components: {
     detailSale,
     detailServer
   },
-  mounted: function () {
+  created(){
+    var pid = this.$route.query.gid
     // this.distinguish()
-    // var that = this
-    // this.axios.post('http://www.ethedot.com/chatshop/Index/test')
-    // .then(function (response) {
-    //   for (var i = 0; i < response.data.length; i++) {
-    //     if (that.$route.params.gid === response.data[i].gid) {
-    //       that.detailData.push(
-    //         response.data[i].name,
-    //         response.data[i].price,
-    //         response.data[i].oldpri,
-    //         response.data[i].content,
-    //       )
-    //       that.gid = response.data[i].gid
-    //       var arr = response.data[i].lunbo
-    //       for (let i = 0; i < arr.length; i++) {
-    //         that.lunbo.push({
-    //           'pic': arr[i]
-    //         })
-    //       }
-    //     }
-    //   }
-    // })
-    // .catch(function (error) {
-    //   console.log(error)
-    // })
+    var that = this
+    this.axios.get('http://47.97.80.89:8082/CGXT/product/showProduct',{
+      params:{
+        id: pid
+      }
+    })
+    .then(function (response) {
+      //处理返回数据
+          that.goodDetail = response.data.pro  
+    })
+    .catch(function (error) {
+      console.log(error)
+    })
   }
 }
 </script>
- 
+
 <style lang='less'>
 @import '../../common/animate.css';
 p{
@@ -264,7 +201,7 @@ li{
     bottom: 50px;
     overflow-y: scroll;
     &::-webkit-scrollbar{
-      display: none; 
+      display: none;
     }
   }
   .banner{
@@ -368,7 +305,7 @@ li{
     .promise-container{
       p{
         float: left;
-        width: 30%;
+        width: 50%;
         line-height: 40px;
         span{
           color: #f29600;
@@ -425,7 +362,7 @@ li{
         padding: 0;
         margin: 0;
         border: none;
-        height: 50px;  
+        height: 50px;
         font-size: 14px;
         color:#ebebeb;
       }
@@ -447,7 +384,7 @@ li{
   li{
     list-style: none;
     background: #fff;
-    width: 25%;
+    width: 30%!important;
     float: left;
     margin-left: 3%;
     margin-top: 10px;

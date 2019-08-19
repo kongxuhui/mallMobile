@@ -24,39 +24,22 @@
                 <p>{{item.title}}</p>
                 <p class="yuan">￥{{item.price}}</p>
                 <p class="car" @click="addCar(item)"></p>
-              </li>  
-            </ul>            
+              </li>
+            </ul>
         </div>
     </div>
   </div>
 </template>
 
+
 <script>
+import qs from 'Qs'
 export default {
   data () {
     return {
-      goods:[
-        {id:'1',counter:1,title:'炫迈口香糖11',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'},
-        {id:'2',counter:1,title:'炫迈口香糖22',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'},
-        {id:'3',counter:1,title:'炫迈口香糖33',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'},
-        {id:'4',counter:1,title:'炫迈口香糖44',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'},
-        {id:'5',counter:1,title:'炫迈口香糖55',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'},
-        {id:'5',counter:1,title:'炫迈口香糖66',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'},
-        {id:'6',counter:1,title:'炫迈口香糖77',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'},
-        {id:'8',counter:1,title:'炫迈口香糖88',price:10,total:10,thumb:'http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/dFf8n9pqh3emm8llMeIElemmfl8Mk8.png'}
-
-      ],
+      goods:[],
       recommend: [
-        {id:'0',catalog: '全部'},
-        {id:'7',catalog: '休闲零食'},
-        {id:'8',catalog: '生活用品'},
-        {id:'9',catalog: '粮油调味'},
-        {id:'1',catalog: '水饮冲调'},
-        {id:'2',catalog: '香烟'},
-        {id:'3',catalog: '方便速食'},
-        {id:'4',catalog: '中外名酒'},
-        {id:'5',catalog: '生活服务'},
-        {id:'6',catalog: '快递驿站'}
+
       ],
       arr:[],
       activeId: '0',
@@ -69,9 +52,9 @@ export default {
       // new Promise(() =>{
       //   let arr = sessionStorage.getItem('list',JSON.parse(item))?sessionStorage.getItem('list',JSON.parse(item)):[];
       // }).then(result){
-        
+
       // }
-      if(this.$data.arr.length == 0){
+      if(sessionStorage.getItem('list') == '' || sessionStorage.getItem('list') == null){
         this.$data.arr.push(item);
         sessionStorage.setItem('list',JSON.stringify(this.$data.arr));
       }else{
@@ -79,23 +62,23 @@ export default {
         this.$data.arr.push(item);
         sessionStorage.setItem('list',JSON.stringify(this.$data.arr));
       }
-      
-      console.log(item)
     },
     changItem (item, key) {
       this.activeId = item.id
-      // this.goods = []
-      // var that = this
-      // this.axios.post('http://www.ethedot.com/chatshop/Index/test', {
-      //   id: sessionStorage.getItem('id')
-      // })
-      // .then(function (response) {
-      //   for (var i = 0; i < response.data.length; i++) {
-      //     if (response.data[i].tid.match(item.tid)) {
-      //       that.goods.push({gid: response.data[i].gid, name: response.data[i].name, src: 'http://www.ethedot.com/chatshop/Public/Uploads/' + response.data[i].pic})
-      //     }
-      //   }
-      // })
+      this.goods = []
+      var that = this
+      let data = {"type":this.activeId}
+       this.axios.post('http://47.97.80.89:8082/CGXT/product/productList3', 
+        qs.stringify(data)).then(function (response) {
+         for (var i = 0; i < response.data.pro.list.length; i++) {
+           var obj = response.data.pro.list[i];
+           var imgURl = obj.proList[0].url;
+           if(imgURl===null){
+
+           }
+           that.goods.push({id:obj.id,gid:obj.type,price:obj.price, title:obj.name, thumb: 'http://47.97.80.89:8082' + imgURl})
+         }
+       })
       // .catch(function (error) {
       //   console.log(error)
       // })
@@ -118,21 +101,48 @@ export default {
   mounted: function () {
     if(this.$route.query.id){
       this.activeId = this.$route.query.id;
+      this.axios.post('http://47.97.80.89:8082/CGXT/product/productList3',qs.stringify({"type":this.activeId})).then(function (response) {
+         for (var i = 0; i < response.data.pro.list.length; i++) {
+           var obj = response.data.pro.list[i];
+           var imgURl = obj.proList[0].url;
+           if(imgURl===null){
+
+           }
+           that.goods.push({id:obj.id,gid:obj.type,price:obj.price, title:obj.name, thumb: 'http://47.97.80.89:8082' + imgURl})
+         }
+       })
+    }else{
+      this.axios.post('http://47.97.80.89:8082/CGXT/product/productList3',qs.stringify({"type":"0"})).then(function (response) {
+         for (var i = 0; i < response.data.pro.list.length; i++) {
+           var obj = response.data.pro.list[i];
+           var imgURl = obj.proList[0].url;
+           if(imgURl===null){
+
+           }
+           that.goods.push({id:obj.id,gid:obj.type,price:obj.price, title:obj.name, thumb: 'http://47.97.80.89:8082' + imgURl})
+         }
+       })
     }
     // if(param)
   //   this.loading = true
   //   this.distinguish()
-  //   var that = this
+     var that = this
+     let data = {"pageNum":"1","pageSize":"20"}
   //   // 获取分类
-  //   this.axios.post('http://www.ethedot.com/chatshop/Index/typelist', {
-  //     id: sessionStorage.getItem('id')
-  //   })
-  //   .then(function (response) {
-  //     that.loading = false
-  //     for (var i = 0; i < response.data.length; i++) {
-  //       that.recommend.push({tid: response.data[i].tid, catalog: response.data[i].comment})
-  //     }
-  //   })
+     this.axios.get('http://47.97.80.89:8082/CGXT/category/categoryList3', {
+       params:{
+          pageNum:"1",
+          pageSize:"20"
+        }
+     }).then(function (response) {
+       that.loading = false
+       for (var   i = 0; i < response.data.pro.length; i++) {
+         var obj = response.data.pro[i];
+         that.recommend.push({id:obj.cid, catalog: obj.name})
+       }
+       that.recommend = that.recommend.reverse()
+     })
+       
   //   .catch(function (error) {
   //     console.log(error)
   //   })
@@ -235,7 +245,7 @@ export default {
   }
   .right{
     .rightItem{
-        background: #eee; 
+        background: #eee;
         position: fixed;
         top: 0;
         bottom: 50px;
@@ -260,7 +270,7 @@ export default {
             height: 100%;
             width: 6px;
             display: inline-block;
-            
+
             -webkit-animation: stretchdelay 1.2s infinite ease-in-out;
             animation: stretchdelay 1.2s infinite ease-in-out;
           }
@@ -281,7 +291,7 @@ export default {
             animation-delay: -0.8s;
           }
           @-webkit-keyframes stretchdelay {
-            0%, 40%, 100% { -webkit-transform: scaleY(0.4) } 
+            0%, 40%, 100% { -webkit-transform: scaleY(0.4) }
             20% { -webkit-transform: scaleY(1.0) }
           }
           @keyframes stretchdelay {

@@ -2,7 +2,7 @@
   <div class="cart">
     <div class="head">
       <mt-cell title="购物清单">
-        购物车内共<span class="amount">10</span>件商品
+        购物车内共<span class="amount">{{goods.length}}</span>件商品
       </mt-cell>    
     </div>
     <div class="container">
@@ -11,22 +11,20 @@
         <p>购物车空空哒</p>
         <button><router-link to="/catalog">开始购物</router-link></button>
       </div>
-      <li v-for="(item, key) in goods" :key="item.id">
+      <li v-for="(item, index) in goods" :key="index">
         <!-- <li> -->
         <div class="list">
           <div class="left"> 
-              <!-- <button class="selectGood" @click.stop.prevent="selectGoods(item)"><span v-show="item.status === true"></span></button> -->
-              <button class="selectGood" @click.stop.prevent="selectGoods(item)"><span></span></button>
-              <img src="http://ssdd.xiaovip.com.cn/attachment/images/2/2019/07/mVH1hjH5kfseeGH591NDqNZ49YK5Eh.jpg" alt="">
+              <button class="selectGood" @click.stop.prevent="selectGoods(item)"><span v-show="item.status === true"></span></button>
+              <img :src="item.thumb" alt="">
           </div>
           <div class="right">
-            <p class="product_name"> {{item.name}} <span class="product_bill">￥ {{item.price}} </span></p>
+            <p class="product_name"> {{item.title}} <span class="product_bill">￥ {{item.price}} </span></p>
             <div class="product_amount">
               <input type="button" value="-" @click="mins(item)" class="mins">
-              <input type="text" disabled class="num" v-model="item.counter"> 
-              <input type="text" disabled class="num" v-model="kjdsk"> 
+              <input type="text" disabled class="num" v-model="item.counter">
               <input type="button" value="+" @click="plus(item)" class="plus">
-              <i class="el-icon-delete" @click="deleteItem(key,item)"></i>
+              <i class="el-icon-delete" @click="deleteItem(index,item)"></i>
             </div>
           </div>      
         </div>
@@ -35,9 +33,8 @@
     <!-- <div class="total-wrapper" v-show="goods.length !== 0"> -->
     <div class="total-wrapper">
 
-      <!-- <p><button @click='selectAll' class="selectAll"><span v-show="checkAll"></span></button>全选 合计：￥<span class="bill">{{ sum }}</span></p> -->
-      <p><button @click='selectAll' class="selectAll"><span></span></button>全选 合计：￥<span class="bill">10</span></p>
-      <mt-button type="primary" @click="buy">结算</mt-button>
+      <p><button @click='selectAll' class="selectAll"><span v-show="checkAll"></span></button>全选 合计：￥<span class="bill">{{ sum }}</span></p>
+      <!-- <mt-button type="primary" @click="buy">结算</mt-button>-->
     </div>
   </div>
 </template>
@@ -51,7 +48,8 @@ export default {
       checkAll: false,
       name: '',
       menu: [],
-      num: 0
+      num: 0,
+      counter: 1
     }
   },
   methods: {
@@ -60,27 +58,27 @@ export default {
         return
       }
       item.counter --
-      item.price -= item.total
+      item.price = Number(item.price) - item.total
       if (item.status === true) {
         this.sum -= item.total
       }
     },
     plus (item) {
       item.counter += 1
-      item.price += item.total
-      if (item.status === true) {
+      item.price = Number(item.price) + item.total
+      if (item.status === true) {      
         this.sum += item.total
       }
     },
     selectGoods (item) {
       if (item.status === false) {
-        this.sum += item.price
+        this.sum += Number(item.price)
         item.status = true
         if (item.status === true) {
           this.num += 1
         }
       } else {
-        this.sum -= item.price
+        this.sum += Number(item.price)        
         item.status = false
         if (item.status === false) {
           this.num -= 1
@@ -94,21 +92,8 @@ export default {
     },
     deleteItem (key, item) {
       var that = this
-      this.axios.post('http://www.ethedot.com/chatshop/Index/del', {
-        cid: item.cid,
-        id: sessionStorage.getItem('id')
-      })
-      .then(function (response) {
-        if (response.data === 1) {
-          alert('删除成功！')
-          that.goods.splice(key, 1)
-        } else if (response.data === 2) {
-          alert('删除失败！')
-        }
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
+      that.goods.splice(key,1)
+      sessionStorage.setItem('list',that.goods)
     },
     selectAll () {
       this.sum = 0
@@ -131,7 +116,21 @@ export default {
   },
   mounted: function () {
     this.goods = JSON.parse(sessionStorage.getItem('list'));
-    console.log(this.goods)
+    var that = this
+    for (var i = 0; i < that.goods.length; i++) {
+      // that.goods[i].push({
+        console.log(that.goods[i].thumb)
+        if(!that.goods[i].thumb){
+          that.goods[i].thumb = 'http://47.97.80.89:8082' + that.goods[i].proList[0].url
+          that.goods[i].title = that.goods[i].name
+        }
+                
+        that.goods[i].total = Number(that.goods[i].price)
+        that.goods[i].counter = 1
+        that.goods[i].status = false
+      // })
+    }
+    console.log(that.goods)
     // this.distinguish()
     // var that = this
     // this.axios.post('http://www.ethedot.com/chatshop/Index/car', {

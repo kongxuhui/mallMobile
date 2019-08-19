@@ -6,8 +6,8 @@
             </router-link>
             <div class="search">
                 <i class="el-icon-search"></i>
-                <input type="text" class="input" @click="searchInput" v-model="searchContent">
-                <button class="cancel" @click="cancelSearch" v-show="cancelSta">取消</button>
+                <input type="text" disabled class="input" @click="searchInput" v-model="searchContent">
+                <button class="cancel" disabled @click="cancelSearch" v-show="cancelSta">取消</button>
                 <button class="btn-search" @click="search">搜索</button>
             </div>
         </div>
@@ -35,7 +35,7 @@
                         <span class="hisDate">{{ item.date }}</span>
                     </router-link>
                 </li>
-                <p class="hasHis" v-show="history.length === 0">暂无历史数据</p>
+                <p class="hasHis" v-show="history.length === 0">功能开发中,敬请稍后...</p>
             </ul>
         </div>
     </div>
